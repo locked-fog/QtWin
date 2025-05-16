@@ -2,19 +2,19 @@
 #define qtwEXCEPTION_H
 
 #include <bits/stdc++.h>
-
-
     
 /***
  * 异常信息定义方式
  * QT[来源]_[位置]_[名称]
  */
 enum QtwExceptionList{
-    QTWMICA_ENABLEMICA_NULLPTR = 0x00000001 // qtwMica.cpp/enableMica(QWidget *widget)->widget == nullptr
+    QTWMICA_ENABLEMICA_NULLPTR = 0x00000001, // qtwMica.cpp/enableMica(QWidget *widget)->widget == nullptr
+    QTWMICA_DISABLEMICA_NULLPTR = 0x00000002, // qtwMica.cpp/disableMica(QWidget *widget)->widget == nullptr
 };
 
 const std::unordered_map<QtwExceptionList, std::string> errorMap = {
-    {QTWMICA_ENABLEMICA_NULLPTR, "qtwMica.cpp/enableMica(QWidget *widget)->widget == nullptr"}
+    {QTWMICA_ENABLEMICA_NULLPTR, "qtwMica.cpp/enableMica(QWidget *widget)->widget == nullptr"},
+    {QTWMICA_DISABLEMICA_NULLPTR, "qtwMica.cpp/disableMica(QWidget *widget)->widget == nullptr"},
 };
 
 class QtwException : public std::exception {

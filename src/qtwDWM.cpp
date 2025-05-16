@@ -1,9 +1,14 @@
-#include "include/qtwMica.h"
+#include "include/qtwDWM.h"
+
+#define debug
+#include <bits/stdc++.h>
 
 int QtWin::enableMica(QWidget *widget){
     if (widget == nullptr){
-        throw QtwException(QTWMICA_ENABLEMICA_NULLPTR);
+        throw QtwException(QTWDWM_ENABLEMICA_NULLPTR);
     }
+    std::ofstream ofs("./out.txt");
+    
 
     //启用QSS：透明背景
     widget->setStyleSheet(R"(
@@ -23,14 +28,12 @@ int QtWin::enableMica(QWidget *widget){
 
 int QtWin::disableMica(QWidget* widget){
     if (widget == nullptr){
-        throw QtwException(QTWMICA_DISABLEMICA_NULLPTR);
+        throw QtwException(QTWDWM_DISABLEMICA_NULLPTR);
     }
 
     //关闭QSS透明背景
     widget->setStyleSheet(R"(
-            QWidget {
-                background-color: ;
-            }
+            
         )");
 
     //获取窗口句柄

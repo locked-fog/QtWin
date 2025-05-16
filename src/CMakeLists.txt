@@ -16,12 +16,12 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
 set(LIB_HEADERS
-    include/qtwMica.h
+    include/qtwDWM.h
     include/qtwException.h
 )
 
 set(LIB_SOURCES
-    qtwMica.cpp
+    qtwDWM.cpp
     qtwException.cpp
 )
 

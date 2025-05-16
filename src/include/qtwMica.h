@@ -20,7 +20,7 @@ namespace QtWin{
      * @param widget 需要关闭Mica效果的窗口
      * @return 0表示成果，其他值查看错误列表
      */
-    // int disableMica(QWidget *widget);
+    int disableMica(QWidget *widget);
 }
 
 

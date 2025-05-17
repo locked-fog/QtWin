@@ -1,7 +1,8 @@
-#ifndef qtwEXCEPTION_H
-#define qtwEXCEPTION_H
+#ifndef QTWEXCEPTION_H
+#define QTWEXCEPTION_H
 
 #include <bits/stdc++.h>
+#include "QtWin.h"
     
 /***
  * 异常信息定义方式
@@ -21,7 +22,7 @@ const std::unordered_map<QtwExceptionList, std::string> errorMap = {
     {QTWDWM_DISABLEBLUR_NULLPTR, "qtwDWM.cpp/disableBlur(QWidget *widget)->widget == nullptr"},
 };
 
-class QtwException : public std::exception {
+class QTWIN_API QtwException : public std::exception {
 public:
     /***
     * 根据错误码构造异常

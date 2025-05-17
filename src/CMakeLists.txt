@@ -63,7 +63,7 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
     FILES_MATCHING PATTERN "*.h"
 )
 
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/QtWin_export/h
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/QtWin.h
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     COMPONENT Devel
 )
@@ -71,7 +71,7 @@ install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/QtWin_export/h
 install(EXPORT QtWinTargets
     FILE QtWinTargets.cmake
     NAMESPACE QtWin::
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/QtWin
+    DESTINATION library/cmake/QtWin
     COMPONENT Devel
 )
 

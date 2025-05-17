@@ -10,11 +10,15 @@
 enum QtwExceptionList{
     QTWDWM_ENABLEMICA_NULLPTR = 0x00000001, // qtwDWM.cpp/enableMica(QWidget *widget)->widget == nullptr
     QTWDWM_DISABLEMICA_NULLPTR = 0x00000002, // qtwDWM.cpp/disableMica(QWidget *widget)->widget == nullptr
+    QTWDWM_ENABLEBLUR_NULLPTR = 0x00000003, //qtwDWM.cpp/enableBlur(QWidget *widget)->widget == nullptr
+    QTWDWM_DISABLEBLUR_NULLPTR = 0x00000004, //qtwDWM.cpp/disableBlur(QWidget *widget)->widget == nullptr
 };
 
 const std::unordered_map<QtwExceptionList, std::string> errorMap = {
     {QTWDWM_ENABLEMICA_NULLPTR, "qtwDWM.cpp/enableMica(QWidget *widget)->widget == nullptr"},
     {QTWDWM_DISABLEMICA_NULLPTR, "qtwDWM.cpp/disableMica(QWidget *widget)->widget == nullptr"},
+    {QTWDWM_ENABLEBLUR_NULLPTR, "qtwDWM.cpp/enableBlue(QWidget *widget)->widget == nullptr"},
+    {QTWDWM_DISABLEBLUR_NULLPTR, "qtwDWM.cpp/disableBlur(QWidget *widget)->widget == nullptr"},
 };
 
 class QtwException : public std::exception {

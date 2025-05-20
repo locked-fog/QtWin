@@ -1,52 +1,53 @@
-# QtWin - Windows Qt Application
+# QtWin Project
 
-A Qt-based application for Windows with DWM (Desktop Window Manager) integration.
+A Qt6 library providing Windows-specific UI enhancements.
 
-## Features
-- Windows-specific Qt integration
-- DWM (Desktop Window Manager) support
-- Custom exception handling
-
-## Build Requirements
+## Prerequisites
 - CMake 3.16+
-- Qt 6 (Core, Gui, Widgets modules required)
+- Qt6 (Core, Gui, Widgets components)
 - C++17 compatible compiler
-- Windows SDK (for DWM integration)
+- Windows SDK (for Windows builds)
 
 ## Building
+
 ```bash
-# Configure with CMake
-cmake -B build -S .
+# Configure
+mkdir build
+cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release
 
-# Build the project
-cmake --build build --config Release
-
-# Install the library (optional)
-cmake --install build --config Release
+# Build
+cmake --build . --config Release
 ```
 
-## Installation
-The project can be installed system-wide with:
+## Installing
+
 ```bash
-cmake --install build --config Release
+# From build directory
+cmake --install . --prefix "your/install/path"
 ```
 
 This will install:
-- Runtime components to `library/`
-- Development headers to `include/`
+- Library files to `library/`
+- Headers to `include/`
 - CMake config files to `library/cmake/QtWin/`
 
-## Usage
-To use the library in another CMake project:
+## Usage in Other Projects
+
+After installation, you can use find_package() in your CMake projects:
+
 ```cmake
 find_package(QtWin REQUIRED)
 target_link_libraries(your_target PRIVATE QtWin::QtWin)
 ```
 
-For standalone usage, link against the library:
-```bash
-./build/Release/QtWin.exe
-```
+## Features
 
-## License
-MIT License - See [LICENSE](LICENSE) file for details
+- `qtwDWM`: Windows DWM (Desktop Window Manager) integration
+- `qtwButton`: Enhanced Qt buttons with Windows styling
+- `qtwMonet`: Windows-themed UI components
+- `qtwException`: Windows-specific exception handling
+
+## Notes for Windows Development
+
+The library automatically links against `dwmapi.lib` on Windows builds.

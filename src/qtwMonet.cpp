@@ -87,6 +87,45 @@ QColor QtwMonet::extractDominantVibrantColor(const QImage& image){
     }
 }
 
+std::vector<std::pair<QColor, QColor>> QtwMonet::generatePaletteFromSeed(const QColor& seed){
+    std::vector<std::pair<QColor,QColor>> palette(5);
+    if(!seed.isValid()){
+        throw(QtwException(QTWMONET_GENERATEPALETTEFROMSEED_INVALIDCOLOR));
+    }
+    float baseHue, baseSaturation, baseLightness;
+    seed.getHslF(&baseHue,&baseSaturation,&baseLightness);
+
+    if(baseHue < 0.0) baseHue = 0.0;
+    baseSaturation = std::max(baseSaturation , 0.5f);
+    baseLightness = std::max(baseLightness,0.4f);
+    baseLightness = std::min(baseLightness, 0.75f);
+
+    //Pair 0: Primary
+    palette[0].first.setHslF(baseHue,std::clamp(baseSaturation, 0.5f,0.9f),std::clamp(baseLightness,0.55f,0.75f));
+    palette[0].second.setHslF(baseHue, std::clamp(baseSaturation * 0.7f,0.3f,0.7f), std::clamp(baseLightness * 0.3f,0.1f,0.25f));
+
+    //Pair 1
+    float hue1 = std::fmod(baseHue + 30.0f/360.0f+1.0f,1.0f);
+    palette[1].first.setHslF(hue1,std::clamp(baseSaturation * 0.9f,0.55f,0.9f),std::clamp(baseLightness*1.05f,0.6f,0.8f));
+    palette[1].second.setHslF(hue1, std::clamp(baseSaturation * 0.6f, 0.3f, 0.65f), std::clamp(baseLightness * 0.35f, 0.12f, 0.28f));
+
+    //Pair 2
+    float hue2 = std::fmod(baseHue + 60.0f/360.0f + 1.0f, 1.0f);
+    palette[2].first.setHslF(hue2, std::clamp(baseSaturation * 0.95f, 0.6f, 0.95f), std::clamp(baseLightness * 1.1f, 0.65f, 0.85f));
+    palette[2].second.setHslF(hue2, std::clamp(baseSaturation * 0.5f, 0.25f, 0.6f), std::clamp(baseLightness * 0.4f, 0.15f, 0.3f));
+
+    //Pair 3
+    float hue3 = std::fmod(baseHue + 180.0/360.0 + 1.0, 1.0);
+    palette[3].first.setHslF(hue3, std::clamp(baseSaturation * 0.8, 0.45, 0.85), std::clamp(baseLightness * 0.9, 0.5, 0.7));
+    palette[3].second.setHslF(hue3, std::clamp(baseSaturation * 0.65, 0.25, 0.6), std::clamp(baseLightness * 0.25, 0.08, 0.22));
+
+    //Pair 4
+    palette[4].first.setHslF(baseHue, std::clamp(baseSaturation * 0.2, 0.05, 0.3), std::clamp(baseLightness * 1.2, 0.75, 0.9));
+    palette[4].second.setHslF(baseHue, std::clamp(baseSaturation * 0.15, 0.02, 0.25), std::clamp(baseLightness * 0.15, 0.05, 0.15));
+    
+    return palette;
+}
+
 void QtwMonet::generate(){
     if(wallpaperImage.isNull()){
         throw(QtwException(QTWMONET_GENERATE_NULLIMAGE));

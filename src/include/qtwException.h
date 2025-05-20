@@ -19,6 +19,7 @@ enum QtwExceptionList{
     QTWMONET_GETWALLPAPER_NULLIMAGE = 0x00000008, //qtwMonet.cpp/getWallpaper()|extractDominantVibrantColor(const Qimage& image)->wallpaperImage == null
     QTWMONET_EXTRACTDOMINANTVIBRANTCOLOR_NOTFOUND = 0x00000009, //qtwMonet.cpp/extractDominantVibrantColor(const QImage& image)::Color Not Found
     QTWMONET_GENERATE_NULLIMAGE = 0x0000000a, //qtwMonet.cpp/generate()->wallpaperImage == null
+    QTWMONET_GENERATEPALETTEFROMSEED_INVALIDCOLOR = 0x0000000b, //qtwMonet.cpp/generatePaletteFromSeed(const QColor& seed)->seed == invalid
 
 };
 
@@ -32,7 +33,8 @@ const std::unordered_map<QtwExceptionList, std::string> errorMap = {
     {QTWMONET_GETWALLPAPER_NULLPIXMAP, "qtwMonet.cpp/getWallpaper()->pixmap == null"},
     {QTWMONET_GETWALLPAPER_NULLIMAGE, "qtwMonet.cpp/getWallpaper()|extractDominantVibrantColor(const Qimage& image)->wallpaperImage == null"},
     {QTWMONET_EXTRACTDOMINANTVIBRANTCOLOR_NOTFOUND, "qtwMonet.cpp/extractDominantVibrantColor(const QImage& image)::Color Not Found"},
-    {QTWMONET_GENERATE_NULLIMAGE, "qtwMonet.cpp/generate()->wallpaperImage == null"}
+    {QTWMONET_GENERATE_NULLIMAGE, "qtwMonet.cpp/generate()->wallpaperImage == null"},
+    {QTWMONET_GENERATEPALETTEFROMSEED_INVALIDCOLOR, "qtwMonet.cpp/generatePaletteFromSeed(const QColor& seed)->seed == invalid"},
 
 };
 

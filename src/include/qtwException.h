@@ -13,6 +13,7 @@ enum QtwExceptionList{
     QTWDWM_DISABLEMICA_NULLPTR = 0x00000002, // qtwDWM.cpp/disableMica(QWidget *widget)->widget == nullptr
     QTWDWM_ENABLEBLUR_NULLPTR = 0x00000003, //qtwDWM.cpp/enableBlur(QWidget *widget)->widget == nullptr
     QTWDWM_DISABLEBLUR_NULLPTR = 0x00000004, //qtwDWM.cpp/disableBlur(QWidget *widget)->widget == nullptr
+    QTWBUTTON_PAINTEVENT_NULLPTR = 0x00000005, //qtwButton.cpp/paintEvent(QPaintEvent *event)->style() == nullptr
 };
 
 const std::unordered_map<QtwExceptionList, std::string> errorMap = {
@@ -20,6 +21,7 @@ const std::unordered_map<QtwExceptionList, std::string> errorMap = {
     {QTWDWM_DISABLEMICA_NULLPTR, "qtwDWM.cpp/disableMica(QWidget *widget)->widget == nullptr"},
     {QTWDWM_ENABLEBLUR_NULLPTR, "qtwDWM.cpp/enableBlue(QWidget *widget)->widget == nullptr"},
     {QTWDWM_DISABLEBLUR_NULLPTR, "qtwDWM.cpp/disableBlur(QWidget *widget)->widget == nullptr"},
+    {QTWBUTTON_PAINTEVENT_NULLPTR, "qtwButton.cpp/paintEvent(QPaintEvent *event)->style() == nullptr"},
 };
 
 class QTWIN_API QtwException : public std::exception {

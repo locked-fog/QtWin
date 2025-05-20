@@ -10,11 +10,13 @@ set(CAMKE_AUTORCC ON)
 set(LIB_HEADERS
     include/qtwDWM.h
     include/qtwException.h
+    include/qtwButton.h
 )
 
 set(LIB_SOURCES
     qtwDWM.cpp
     qtwException.cpp
+    qtwButton.cpp
 )
 
 add_library(QtWin SHARED

@@ -3,7 +3,7 @@
 
 #include "QtWin.h"
 
-// #include <qtwExcetion.h>
+#include <qtwException.h>
 #include <dwmapi.h>
 #include <windows.h>
 #include <QWidget>
@@ -39,5 +39,7 @@ namespace QtWin{
      */
     [[deprecated("Non-effect in Windows 11")]]
     QTWIN_API int disableBlur(QWidget *widget);
+
+
 }
 #endif

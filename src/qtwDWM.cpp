@@ -1,5 +1,4 @@
 #include <qtwDWM.h>
-#include <qtwException.h>
 
 int QtWin::enableMica(QWidget *widget){
     if (widget == nullptr){
@@ -17,8 +16,8 @@ int QtWin::enableMica(QWidget *widget){
     HWND hwnd = reinterpret_cast<HWND>(widget->winId());
     DWORD policy = DWMSBT_MAINWINDOW;
     DwmSetWindowAttribute(hwnd, DWMWA_SYSTEMBACKDROP_TYPE, &policy, sizeof(policy));
-    const MARGINS margins = {-1, -1, -1, -1};
-    DwmExtendFrameIntoClientArea(hwnd, &margins);
+    const MARGINS margins = {-1,-1,-1,-1};
+    DwmExtendFrameIntoClientArea(hwnd, &margins);//扩展效果到整个Window
     return 0;
 }
 
@@ -38,6 +37,8 @@ int QtWin::disableMica(QWidget* widget){
     //关闭Mica材质
     DWORD policy = DWMSBT_NONE;
     DwmSetWindowAttribute(hwnd,DWMWA_SYSTEMBACKDROP_TYPE,&policy,sizeof(policy));
+    const MARGINS margins = {-1,-1,-1,-1};
+    DwmExtendFrameIntoClientArea(hwnd,&margins);
     return 0;
 }
 

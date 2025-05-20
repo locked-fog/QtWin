@@ -19,7 +19,7 @@ class QTWIN_API QtwButton : public QPushButton {
     Q_OBJECT
 
     //动画部分声明Q_PROPERTY
-    Q_PROPERTY(QColor animatedBgColor READ animatedBgColor WRITE setAnimaterBgColor NOTIFY animatedBgColorChanged)
+    Q_PROPERTY(QColor animatedBgColor READ animatedBgColor WRITE setAnimatedBgColor NOTIFY animatedBgColorChanged)
     Q_PROPERTY(qreal animatedOpacity READ animatedOpacity WRITE setAnimatedOpacity NOTIFY animatedOpacityChanged)
 
 public:
@@ -61,13 +61,17 @@ private:
     static constexpr int HOVER_DARKER_FACTOR = 120;
     static constexpr int ANIMATION_DURATION_COLOR_MS = 20;
     static constexpr int ANIMATION_DURATION_OPACITY_MS = 20;
-    static constexpr int CORNER_RADIUS = 8;
+    static constexpr int CORNER_RADIUS = 6;
 
     //动画对象
     QPropertyAnimation *bgColorAnimation;
     QPropertyAnimation *opacityAnimation;
 
     bool isHovered;
+
+    //TODO:缩放动画
+
+    //TODO:莫奈取色
 };
 
 #endif

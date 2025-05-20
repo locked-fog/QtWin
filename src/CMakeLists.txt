@@ -11,12 +11,14 @@ set(LIB_HEADERS
     include/qtwDWM.h
     include/qtwException.h
     include/qtwButton.h
+    include/qtwMonet.h
 )
 
 set(LIB_SOURCES
     qtwDWM.cpp
     qtwException.cpp
     qtwButton.cpp
+    qtwMonet.cpp
 )
 
 add_library(QtWin SHARED

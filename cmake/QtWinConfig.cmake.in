@@ -1,0 +1,7 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+find_dependency(Qt6 REQUIRED COMPONENTS Widgets)
+
+include("${CMAKE_CURRENT_LIST_DIR}/QtWinTargets.cmake")
+check_required_components(QtWin)

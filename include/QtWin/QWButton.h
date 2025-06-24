@@ -1,6 +1,5 @@
-// include/QtWin/QWButton.h
-
-#pragma once
+#ifndef QWBUTTON_H
+#define QWBUTTON_H
 
 #include <QPushButton>
 #include <QColor>
@@ -76,3 +75,5 @@ private:
 };
 
 } // namespace QtWin
+
+#endif

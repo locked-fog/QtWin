@@ -2,7 +2,9 @@ qt_standard_project_setup()
 
 qt_add_library(QtWin SHARED
     qwbutton.cpp
+    qwpalette.cpp
     ../include/QtWin/QWButton.h
+    ../include/QtWin/QWPalette.h
 )
 
 add_library(QtWin::QtWin ALIAS QtWin)

@@ -18,9 +18,9 @@ option(QTWIN_BUILD_TESTS "Build the QtWin tests" ON)
 #    add_subdirectory(example)
 #endif()
 
-#if(QTWIN_BUILD_TESTS)
-#    add_subdirectory(tests)
-#endif()
+if(QTWIN_BUILD_TESTS)
+    add_subdirectory(tests)
+endif()
 
 # ===============
 # CPack Rules

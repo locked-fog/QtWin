@@ -30,7 +30,7 @@
 
 ### Class `QWPalette`
 
-#### 
+#### TODO
 
 ## Color Scheme: Dynamic Color Extraction
 

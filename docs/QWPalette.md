@@ -18,15 +18,16 @@
 
 | Name | Feature | Note |
 | --- | --- | --- |
-| `HCTColor` | HCT color space | none |
-| `RGBColor` | RGB color space | Auto convert from `QColor` |
+| `HCTColor` | HCT color space | Contains hue, chroma, tone components |
+| `RGBColor` | sRGB color space | Can be constructed from QColor or RGB values |
 
 ### Public Functions
 
 | Name | Parameters | Return |  Feature | Note |
 | --- | --- | --- | --- | --- |
-| `RGB2HCT` | `const RGBColor&` | `HCTColor` | convert RGB to HCT | none |
-| `HCT2RGB` | `const HCTColor&` | `RGBColor` | convert HCT to RGB | none |
+| `RGB2HCT` | `const RGBColor& rgb` | `HCTColor` | Convert sRGB to HCT color space | none |
+| `HCT2RGB` | `const HCTColor& hct` | `RGBColor` | Convert HCT to sRGB color space | none |
+| `extractSeedColor` | `const QImage& image, std::vector<HCTColor>& colorSet` | `void` | Extract main colors from an image | none |
 
 ### Class `QWPalette`
 
@@ -38,17 +39,20 @@
 | `subColor` | Multiply mainColor's Chroma by 50% |
 | `neutralColor` | Multiply subColor's Chroma by 50% |
 | `neutralAccent` | Multiply neutralColor's Chroma by 40% |
-| `a`ccentColor` | Increase mainColor's Hue by 60° and multiply Chroma by 60% |
+| `accentColor` | Increase mainColor's Hue by 60° and multiply Chroma by 60% |
 
 #### Public Functions
 
 | Name | Parameters | Return | Feature | Note |
 | --- | --- | --- | --- | --- |
-| `setSeedColor` | `RGBColor` | `void` | Set the seed color in RGB | none |
-| `setSeedColor` | `HCTColor` | `void` | Set the seed color in HCT | none |
-| `getHCTColor` | `QWColor,int` | `HCTColor` | Get a specific color in HCT | none |
-| `getQColor` | `QWColor,int` | `QColor` | Get a specific color in QColor | none |
-| `getRGBColor` | `QWColor,int` | `RGBColor` | Get a specific color in RGB | none |
+| `QWPalette` | `none` | - | Default constructor | none |
+| `QWPalette` | `RGBColor rgb` | - | Construct with RGB seed color | none |
+| `QWPalette` | `HCTColor hct` | - | Construct with HCT seed color | none |
+| `setSeedColor` | `RGBColor rgb` | `void` | Set the seed color in RGB | none |
+| `setSeedColor` | `HCTColor hct` | `void` | Set the seed color in HCT | none |
+| `getHCTColor` | `QWColor n, int tone` | `HCTColor` | Get a specific color in HCT | none |
+| `getQColor` | `QWColor n, int tone` | `QColor` | Get a specific color in QColor | none |
+| `getRGBColor` | `QWColor n, int tone` | `RGBColor` | Get a specific color in RGB | none |
 
 ## Color Scheme: Dynamic Color Extraction
 

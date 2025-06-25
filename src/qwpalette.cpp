@@ -127,12 +127,12 @@ QtWin::QWPalette::QWPalette(HCTColor hct) : basicColor(hct){
     const HCTColor subColor = {mainColor.hue , mainColor.chroma * 0.5 , mainColor.tone};
     const HCTColor neutralColor = {subColor.hue , subColor.chroma * 0.5 , subColor.tone};
     const HCTColor neutralAccent = {neutralColor.hue , neutralColor.chroma * 0.6 , neutralColor.tone};
-    const HCTColor AccentColor = {((mainColor.hue + 60.0)>=360.0)? (mainColor.hue - 300.0) : (mainColor.hue + 60.0), mainColor.chroma * 0.6, mainColor.tone};
+    const HCTColor accentColor = {((mainColor.hue + 60.0)>=360.0)? (mainColor.hue - 300.0) : (mainColor.hue + 60.0), mainColor.chroma * 0.6, mainColor.tone};
     palette[0] = mainColor;
     palette[1] = subColor;
     palette[2] = neutralColor;
     palette[3] = neutralAccent;
-    palette[4] = AccentColor;
+    palette[4] = accentColor;
 }
 
 void QtWin::QWPalette::setSeedColor(RGBColor rgb){
@@ -144,12 +144,12 @@ void QtWin::QWPalette::setSeedColor(HCTColor hct){
     const HCTColor subColor = {mainColor.hue , mainColor.chroma * 0.5 , mainColor.tone};
     const HCTColor neutralColor = {subColor.hue , subColor.chroma * 0.5 , subColor.tone};
     const HCTColor neutralAccent = {neutralColor.hue , neutralColor.chroma * 0.6 , neutralColor.tone};
-    const HCTColor AccentColor = {((mainColor.hue + 60.0)>=360.0)? (mainColor.hue - 300.0) : (mainColor.hue + 60.0), mainColor.chroma * 0.6, mainColor.tone};
+    const HCTColor accentColor = {((mainColor.hue + 60.0)>=360.0)? (mainColor.hue - 300.0) : (mainColor.hue + 60.0), mainColor.chroma * 0.6, mainColor.tone};
     palette[0] = mainColor;
     palette[1] = subColor;
     palette[2] = neutralColor;
     palette[3] = neutralAccent;
-    palette[4] = AccentColor;
+    palette[4] = accentColor;
 }
 
 QtWin::HCTColor QtWin::QWPalette::getHCTColor(QWColor n,int tone){

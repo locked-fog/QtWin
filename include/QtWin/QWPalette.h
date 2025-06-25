@@ -54,7 +54,7 @@ namespace QtWin{
                 subColor      = 1,
                 neutralColor  = 2,
                 neutralAccent = 3,
-                AccentColor   = 4
+                accentColor   = 4
             };
 
             

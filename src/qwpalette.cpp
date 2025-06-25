@@ -153,7 +153,7 @@ void QtWin::QWPalette::setSeedColor(HCTColor hct){
 }
 
 QtWin::HCTColor QtWin::QWPalette::getHCTColor(QWColor n,int tone){
-    const HCTColor hct = {this->palette[n].hue,this->palette[n].chroma,tone};
+    const HCTColor hct = {this->palette[n].hue,this->palette[n].chroma,(double)tone};
     return hct;
 }
 QtWin::RGBColor QtWin::QWPalette::getRGBColor(QWColor n,int tone){

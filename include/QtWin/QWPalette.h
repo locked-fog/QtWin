@@ -44,7 +44,6 @@ namespace QtWin{
             QWPalette();
             QWPalette(RGBColor rgb);
             QWPalette(HCTColor hct);
-            ~QWPalette();
 
             void setSeedColor(RGBColor rgb);
             void setSeedColor(HCTColor hct);

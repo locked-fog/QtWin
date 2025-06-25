@@ -117,6 +117,7 @@ QtWin::RGBColor QtWin::HCT2RGB(const HCTColor& hct) {
 
     return { R, G, B };
 }
+QtWin::RGBColor::RGBColor():RGBColor(0,0,0){}
 QtWin::RGBColor::RGBColor(int red,int green,int blue):red(red),green(green),blue(blue){}
 QtWin::RGBColor::RGBColor(QColor qcolor):red(qcolor.red()),green(qcolor.green()),blue(qcolor.blue()){}
 
@@ -163,4 +164,128 @@ QtWin::RGBColor QtWin::QWPalette::getRGBColor(QWColor n,int tone){
 QColor QtWin::QWPalette::getQColor(QWColor n,int tone){
     const RGBColor rgb = this->getRGBColor(n,tone);
     return QColor(rgb.red,rgb.green,rgb.blue);
+}
+
+//Extract color from picture
+namespace QtWin{
+    namespace Monet{
+        //Hide details
+        static void quantizeImageColors(const QImage& image,std::vector<int>& colorCount){
+            //固定4096个桶
+            const int kBins = 4096;
+
+            //初始化桶
+            if(colorCount.size() != kBins){
+                colorCount.assign(kBins, 0);
+            }
+
+            //处理图像缩放
+            constexpr int kMaxDimension = 256;
+            int width = image.width();
+            int height = image.height();
+            int scaledWidth = width;
+            int scaledHeight = height;
+            if (width > kMaxDimension || height > kMaxDimension) {
+                if (width > height) {
+                    scaledWidth = kMaxDimension;
+                    scaledHeight = (kMaxDimension * height) / width;
+                } else {
+                    scaledHeight = kMaxDimension;
+                    scaledWidth = (kMaxDimension * width) / height;
+                }
+            }
+
+            // 转换图像格式
+            QImage img = (image.format() == QImage::Format_ARGB32)
+                ? image
+                : image.convertToFormat(QImage::Format_ARGB32);
+
+            // 缩放处理
+            if (scaledWidth != width || scaledHeight != height) {
+                img = img.scaled(scaledWidth, scaledHeight, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+            }
+
+            // 遍历
+            for (int y = 0; y < img.height(); ++y) {
+                const QRgb* scanLine = reinterpret_cast<const QRgb*>(img.scanLine(y));
+                for (int x = 0; x < img.width(); ++x) {
+                    QRgb pixel = scanLine[x];
+                    // 跳过完全透明或近乎透明的像素
+                    if (qAlpha(pixel) < 128) {
+                        continue;
+                    }
+                    // 每个通道量化到4位（0-15）
+                    int r = qRed(pixel) >> 4;
+                    int g = qGreen(pixel) >> 4;
+                    int b = qBlue(pixel) >> 4;
+                    // 组合成12位键
+                    int key = (r << 8) | (g << 4) | b;
+                    // 对应桶加1
+                    colorCount[key]++;
+                }
+            }
+        }
+
+        static RGBColor keyToRGB(int key) {
+            int r = (key >> 8) & 0xF;
+            int g = (key >> 4) & 0xF;
+            int b = key & 0xF;
+            // 扩展到0-255范围并加半步（+8）
+            RGBColor color;
+            color.red = r * 16 + 8;
+            color.green = g * 16 + 8;
+            color.blue = b * 16 + 8;
+            return color;
+        }
+
+        static void pickTopColors(const std::vector<int>& colorCount, std::vector<HCTColor>& outColors, int topN = 5) {
+            struct ScoredColor {
+                double score;
+                HCTColor hct;
+            };
+
+            std::vector<ScoredColor> scored;
+            const int kBins = 4096;
+            for (int key = 0; key < kBins; ++key) {
+                int population = colorCount[key];
+                if (population <= 0) continue;
+
+                RGBColor rgb = keyToRGB(key);
+                HCTColor hct = RGB2HCT(rgb);
+
+                if (hct.chroma < 5.0 || hct.tone > 95.0 || hct.tone < 5.0) continue;
+
+                double score = static_cast<double>(population) * hct.chroma;
+                scored.push_back({score, hct});
+            }
+
+            // 处理灰阶兜底
+            if (scored.empty()) {
+                for (int key = 0; key < kBins; ++key) {
+                    if (colorCount[key] > 0) {
+                        RGBColor rgb = keyToRGB(key);
+                        HCTColor hct = RGB2HCT(rgb);
+                        scored.push_back((ScoredColor){colorCount[key], hct});
+                    }
+                }
+            }
+
+            // 选出前 topN 个颜色
+            std::partial_sort(scored.begin(), scored.begin() + std::min<int>(topN, scored.size()), scored.end(),
+                            [](const ScoredColor& a, const ScoredColor& b) {
+                                return a.score > b.score;
+                            });
+
+            outColors.clear();
+            for (int i = 0; i < std::min<int>(topN, scored.size()); ++i) {
+                outColors.push_back(scored[i].hct);
+            }
+        }
+    }
+
+    void extractSeedColor(const QImage& image, std::vector<HCTColor>& colorSet) {
+        std::vector<int> colorCount;
+        Monet::quantizeImageColors(image, colorCount);
+        Monet::pickTopColors(colorCount, colorSet);
+    }
 }

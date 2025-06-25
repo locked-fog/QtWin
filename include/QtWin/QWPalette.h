@@ -2,6 +2,7 @@
 #define QWPALETTE_H
 
 #include <QColor>
+#include <QImage>
 
 namespace QtWin{
     /***
@@ -16,6 +17,7 @@ namespace QtWin{
      */
     struct RGBColor{
         int red,green,blue;
+        RGBColor();
         RGBColor(int red,int green,int blue);
         RGBColor(QColor qcolor);
     };
@@ -66,6 +68,13 @@ namespace QtWin{
             HCTColor palette[5];
 
     };
+
+    /***
+     * @brief extract the main color from an image
+     * @param image image in QImage
+     * @param colorSet HCTColor vector to get returns
+     */
+    void extractSeedColor(const QImage& image, std::vector<HCTColor>& colorSet);
 }
 
 #endif

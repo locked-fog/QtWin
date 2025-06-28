@@ -12,7 +12,7 @@
 * **INI格式**：强制使用 INI 文件格式存储配置，保证可读性和兼容性
 
 默认配置文件路径遵循各平台标准：
-* **Windows**: `C:\Users\<User>\AppData\Local\<OrgName>\<AppName>\settings.conf`
+* **Windows**: `C:\Users\<User>\AppData\Roaming\<OrgName>\<AppName>\settings.conf`
 * **Linux**: `/home/<User>/.config/<OrgName>/<AppName>/settings.conf` 
 * **macOS**: `/Users/<User>/Library/Application Support/<OrgName>/<AppName>/settings.conf`
 

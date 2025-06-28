@@ -153,15 +153,15 @@ void QtWin::QWPalette::setSeedColor(HCTColor hct){
     palette[4] = accentColor;
 }
 
-QtWin::HCTColor QtWin::QWPalette::getHCTColor(QWColor n,int tone){
+QtWin::HCTColor QtWin::QWPalette::getHCTColor(QWColor n,int tone)const{
     const HCTColor hct = {this->palette[n].hue,this->palette[n].chroma,(double)tone};
     return hct;
 }
-QtWin::RGBColor QtWin::QWPalette::getRGBColor(QWColor n,int tone){
+QtWin::RGBColor QtWin::QWPalette::getRGBColor(QWColor n,int tone)const{
     const HCTColor hct = this->getHCTColor(n,tone);
     return HCT2RGB(hct);
 }
-QColor QtWin::QWPalette::getQColor(QWColor n,int tone){
+QColor QtWin::QWPalette::getQColor(QWColor n,int tone)const{
     const RGBColor rgb = this->getRGBColor(n,tone);
     return QColor(rgb.red,rgb.green,rgb.blue);
 }

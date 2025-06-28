@@ -59,9 +59,9 @@ namespace QtWin{
             };
 
             
-            HCTColor getHCTColor(QWColor n,int tone);
-            QColor getQColor(QWColor n,int tone);
-            RGBColor getRGBColor(QWColor n,int tone);
+            HCTColor getHCTColor(QWColor n,int tone) const;
+            QColor getQColor(QWColor n,int tone) const;
+            RGBColor getRGBColor(QWColor n,int tone) const;
 
         private:
             HCTColor basicColor;

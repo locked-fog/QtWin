@@ -3,8 +3,14 @@ qt_standard_project_setup()
 qt_add_library(QtWin SHARED
     qwbutton.cpp
     qwpalette.cpp
+    qwapplication.cpp
+    qwlogger.cpp
+    qwsettings.cpp
     ../include/QtWin/QWButton.h
     ../include/QtWin/QWPalette.h
+    ../include/QtWin/QWApplication.h
+    ../include/QtWin/QWLogger.h
+    ../include/QtWin/QWSettings.h
 )
 
 add_library(QtWin::QtWin ALIAS QtWin)

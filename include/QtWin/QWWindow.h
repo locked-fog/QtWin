@@ -20,11 +20,11 @@ class QWWindow : public QWidget {
     Q_PROPERTY(MaterialType material READ material WRITE setMaterial NOTIFY materialChanged)
 
 public:
-    // 枚举值与DWM API对齐，使static_cast更安全
     enum MaterialType {
-        Default = 0, // 对应 DWMSBT_AUTO 或 DWMSBT_NONE
-        Mica = 2,    // 对应 DWMSBT_MAINWINDOW
-        Acrylic = 3, // 对应 DWMSBT_TRANSIENTWINDOW
+        Default = 1,
+        Mica = 2,
+        Acrylic = 3,
+        MicaTabbed = 4
     };
     Q_ENUM(MaterialType)
 
@@ -39,7 +39,6 @@ public:
     int darkTone() const;
     MaterialType material() const;
 
-
 public slots:
     void setSeedColor(const QColor &color);
     void setMaterial(MaterialType type);
@@ -52,34 +51,34 @@ signals:
     void toneChanged();
 
 protected:
-    // 重写事件处理器
-    bool nativeEvent(const QByteArray &eventType, void *message, qintptr *result) override;
+    // paintEvent现在只负责绘制透明背景，不再处理Default模式的绘制
     void paintEvent(QPaintEvent *event) override;
-    void changeEvent(QEvent* event) override;
     void showEvent(QShowEvent *event) override;
 
 private slots:
     void onThemeChanged(bool isDark);
-    void onWindowTitleChanged(const QString &title);
 
 private:
+    /**
+     * @brief 【新增】根据颜色生成QSS背景样式字符串。
+     * @param color 要应用的背景颜色。
+     * @return 返回一个格式为 "background-color: rgb(r, g, b);" 的QString。
+     */
+    QString generateColorStyleSheet(const QColor& color) const;
+
     void initialize();
     void updateCustomTheme();
     void updateFrame();
 
-    class TitleBar;
-    TitleBar *m_titleBar;
-
     QVBoxLayout *m_rootLayout;
-    QWidget *m_contentArea;
     QWidget *m_centralWidget;
 
     QWPalette m_palette;
     int m_lightTone;
     int m_darkTone;
     bool m_isDarkMode;
-
     MaterialType m_material;
+    bool m_firstShow;
 };
 
 } // namespace QtWin

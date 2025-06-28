@@ -69,6 +69,9 @@ settings->endGroup();
 settings->beginGroup("Network");
 int timeout = settings->value("timeout").toInt();
 settings->endGroup();
+
+//或直接读取完整键路径
+int timeout = settings->calue("Network/timeout").toInt();
 ```
 
 ### 2.4 强制同步

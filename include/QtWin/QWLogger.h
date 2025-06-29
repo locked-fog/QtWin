@@ -72,6 +72,16 @@ public:
      * 它会安装一个全局的消息处理器。
      */
     static void init(const QString& logFilePath = {});
+
+    /**
+     * @brief 清理日志文件。
+     * @param logFilePath 要清理的日志文件路径。如果为空，则清理当前正在使用的日志文件。
+     * @return 如果成功清理返回 true，否则返回 false。
+     * 
+     * 此方法会清空指定的日志文件内容。如果日志系统正在使用该文件，
+     * 会暂时关闭文件，清空内容后重新打开。
+     */
+    static bool clearLogFile(const QString& logFilePath = {});
 };
 
 } // namespace QtWin

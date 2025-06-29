@@ -35,12 +35,6 @@ QWWindow::QWWindow(QWidget *parent)
 
 QWWindow::~QWWindow() = default;
 
-// 【新增】QSS样式生成函数
-QString QWWindow::generateColorStyleSheet(const QColor& color) const {
-    return QString("background-color: rgb(%1, %2, %3);")
-        .arg(color.red()).arg(color.green()).arg(color.blue());
-}
-
 void QWWindow::initialize() {
     m_rootLayout = new QVBoxLayout(this);
     m_rootLayout->setContentsMargins(0, 0, 0, 0);
@@ -53,6 +47,9 @@ void QWWindow::initialize() {
     
     m_palette.setSeedColor(QColor(19, 149, 192));
     resize(800, 600);
+    
+    // 初始化调色板
+    setupPalettes();
 }
 
 void QWWindow::setCentralWidget(QWidget *widget) {
@@ -74,22 +71,38 @@ void QWWindow::setCentralWidget(QWidget *widget) {
     updateCustomTheme(); 
 }
 
-
 QWidget* QWWindow::centralWidget() const { return m_centralWidget; }
 QColor QWWindow::seedColor() const { return m_palette.getQColor(QWPalette::mainColor, 50); }
 QWWindow::MaterialType QWWindow::material() const { return m_material; }
 int QWWindow::lightTone() const { return m_lightTone; }
 int QWWindow::darkTone() const { return m_darkTone; }
 
+const QWPalette& QWWindow::colorPalette() const {
+    return m_palette;
+}
+
+QColor QWWindow::getThemeColor(QWPalette::QWColor colorRole, int toneOverride) const {
+    int tone = (toneOverride == -1) ? currentTone() : toneOverride;
+    return m_palette.getQColor(colorRole, tone);
+}
+
+int QWWindow::currentTone() const {
+    return m_isDarkMode ? m_darkTone : m_lightTone;
+}
+
+bool QWWindow::isDarkMode() const {
+    return m_isDarkMode;
+}
+
 void QWWindow::setSeedColor(const QColor &color) {
     if (seedColor() != color) {
         m_palette.setSeedColor(RGBColor(color));
+        setupPalettes(); // 重新设置调色板
         updateCustomTheme();
         emit seedColorChanged(color);
     }
 }
 
-// setMaterial现在只负责更新状态，然后委托给updateCustomTheme来应用视觉变化
 void QWWindow::setMaterial(QWWindow::MaterialType type) {
     if (m_material == type) return;
     m_material = type;
@@ -105,6 +118,7 @@ void QWWindow::setMaterial(QWWindow::MaterialType type) {
 void QWWindow::setLightTone(int tone) {
     if (m_lightTone != tone) {
         m_lightTone = tone;
+        setupPalettes(); // 重新设置调色板
         updateCustomTheme();
         emit toneChanged();
     }
@@ -113,6 +127,7 @@ void QWWindow::setLightTone(int tone) {
 void QWWindow::setDarkTone(int tone) {
     if (m_darkTone != tone) {
         m_darkTone = tone;
+        setupPalettes(); // 重新设置调色板
         updateCustomTheme();
         emit toneChanged();
     }
@@ -142,37 +157,70 @@ void QWWindow::updateFrame() {
 #endif
 }
 
-// 【核心】updateCustomTheme现在是所有样式控制的中心
+void QWWindow::setupPalettes() {
+    QPalette windowPalette = palette();
+    
+    // 为窗口设置主要的色彩角色
+    QColor windowBg = getThemeColor(QWPalette::neutralAccent);
+    QColor windowText = getThemeColor(QWPalette::neutralAccent, m_isDarkMode ? m_lightTone : m_darkTone);
+    QColor base = getThemeColor(QWPalette::neutralColor);
+    QColor alternateBase = getThemeColor(QWPalette::neutralColor, currentTone() + (m_isDarkMode ? 5 : -5));
+    
+    // 设置窗口背景色
+    windowPalette.setColor(QPalette::Window, windowBg);
+    windowPalette.setColor(QPalette::WindowText, windowText);
+    
+    // 设置输入控件背景色
+    windowPalette.setColor(QPalette::Base, base);
+    windowPalette.setColor(QPalette::AlternateBase, alternateBase);
+    windowPalette.setColor(QPalette::Text, windowText);
+    
+    // 设置按钮相关色彩
+    QColor buttonBg = getThemeColor(QWPalette::subColor);
+    QColor buttonText = getThemeColor(QWPalette::subColor, m_isDarkMode ? m_lightTone : m_darkTone);
+    windowPalette.setColor(QPalette::Button, buttonBg);
+    windowPalette.setColor(QPalette::ButtonText, buttonText);
+    
+    // 设置高亮色彩
+    QColor highlight = getThemeColor(QWPalette::accentColor);
+    QColor highlightText = getThemeColor(QWPalette::accentColor, m_isDarkMode ? m_lightTone : m_darkTone);
+    windowPalette.setColor(QPalette::Highlight, highlight);
+    windowPalette.setColor(QPalette::HighlightedText, highlightText);
+    
+    // 设置链接色彩
+    QColor link = getThemeColor(QWPalette::mainColor);
+    QColor visitedLink = getThemeColor(QWPalette::subColor);
+    windowPalette.setColor(QPalette::Link, link);
+    windowPalette.setColor(QPalette::LinkVisited, visitedLink);
+    
+    // 应用调色板到窗口
+    setPalette(windowPalette);
+    
+    // 如果有中心控件，也为其设置调色板
+    if (m_centralWidget) {
+        m_centralWidget->setPalette(windowPalette);
+    }
+}
+
 void QWWindow::updateCustomTheme() {
-    QString styleSheetString;
-
     if (m_material != Default) {
-        // 材质模式：强制背景透明
-        styleSheetString = "background: transparent;";
+        // 材质模式：清除样式表，让透明背景生效
+        setStyleSheet("");
+        if (m_centralWidget) {
+            m_centralWidget->setStyleSheet("");
+        }
     } else {
-        // Default模式：从调色板计算颜色并生成QSS
-        int currentTone = m_isDarkMode ? m_darkTone : m_lightTone;
-        QColor windowBgColor = m_palette.getQColor(QWPalette::neutralAccent, currentTone);
-        styleSheetString = generateColorStyleSheet(windowBgColor);
-    }
-
-    // 将生成的样式表应用到 QWWindow 自身和 centralWidget
-    this->setStyleSheet(styleSheetString);
-    if (m_centralWidget) {
-        m_centralWidget->setStyleSheet(styleSheetString);
+        // Default模式：也清除样式表，完全依赖QPalette系统
+        setStyleSheet("");
+        if (m_centralWidget) {
+            m_centralWidget->setStyleSheet("");
+        }
     }
     
-    // 【可选但推荐】我们依然可以更新文本调色板，因为它不受QSS背景设置影响
-    if (m_centralWidget) {
-        int textTone = m_isDarkMode ? m_lightTone : m_darkTone;
-        QColor textColor = m_palette.getQColor(QWPalette::neutralAccent, textTone);
-        QPalette p = m_centralWidget->palette();
-        p.setColor(QPalette::WindowText, textColor);
-        p.setColor(QPalette::Text, textColor);
-        m_centralWidget->setPalette(p);
-    }
+    // 重新设置调色板以确保颜色更新
+    setupPalettes();
     
-    // 触发重绘以应用所有样式
+    // 触发重绘
     update();
 }
 
@@ -191,6 +239,9 @@ void QWWindow::onThemeChanged(bool isDark) {
 
     // 更新内部控件的主题
     updateCustomTheme();
+    
+    // 发出主题变化信号
+    emit themeChanged(isDark);
 }
 
 void QWWindow::showEvent(QShowEvent *event) {
@@ -202,14 +253,13 @@ void QWWindow::showEvent(QShowEvent *event) {
     }
 }
 
-// paintEvent 的职责现在非常纯粹
 void QWWindow::paintEvent(QPaintEvent *event) {
-    // 只有在启用DWM材质时，才需要手动绘制透明背景
     if (m_material != Default) {
+        // 材质模式：手动绘制透明背景
         QPainter painter(this);
         painter.fillRect(rect(), Qt::transparent);
     } else {
-        // 在Default模式下，我们什么都不做，让Qt根据我们设置的QSS来自动绘制背景
+        // Default模式：使用标准的Qt绘制流程，依赖QPalette
         QWidget::paintEvent(event);
     }
 }

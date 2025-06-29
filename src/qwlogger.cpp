@@ -50,14 +50,14 @@ void customMessageHandler(QtMsgType type, const QMessageLogContext &context, con
         case QtDebugMsg:   levelStr = "DEBUG";    break;
         case QtInfoMsg:    levelStr = "INFO";     break;
         case QtWarningMsg: levelStr = "WARNING";  break;
-        case QtCriticalMsg:levelStr = "CRITICAL"; break;
+        case QtCriticalMsg:levelStr = "ERROR"; break;
         case QtFatalMsg:   levelStr = "FATAL";    break;
     }
 
     // 格式化日志消息，包含时间戳、级别、类别、消息内容和源码位置。
-    const QString logMessage = QString("%1 [%2] %3: %4 (%5:%6, %7)")
-                            .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz"))
+    const QString logMessage = QString("[%1][%2][%3] %4 (%5:%6, %7)")
                             .arg(levelStr)
+                            .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz"))
                             .arg(QString(context.category).isEmpty()? "default" : context.category)
                             .arg(msg)
                             .arg(context.file)
@@ -103,7 +103,42 @@ void QWLogger::init(const QString& logFilePath) {
     // 安装自定义消息处理器，替换 Qt 的默认处理器。
     qInstallMessageHandler(customMessageHandler);
 
-    qCInfo(logGeneral) << "Logger initialized. Outputting to" << (logResources? logFilePath : "Console");
+    qwLogger(LogLevel::Info,logGeneral) << "Logger initialized. Outputting to" << (logResources? logFilePath : "Console");
+}
+
+QWLoggerHandler::QWLoggerHandler(LogLevel level, const QLoggingCategory& (*category)(),
+                                const char* file, int line, const char* function)
+            : m_level(level),
+            m_category(category()),
+            m_file(file),
+            m_line(line),
+            m_function(function) {}
+
+QWLoggerHandler::~QWLoggerHandler(){
+    if(!m_stream.isEmpty()){
+        switch(m_level){
+            case LogLevel::Debug:
+                for (QLoggingCategoryMacroHolder<QtDebugMsg> qt_category(m_category); qt_category; qt_category.control = false)
+                    QMessageLogger(m_file, m_line, m_function, qt_category.name()).debug() << m_stream.toStdString();
+                break;
+            case LogLevel::Info:
+                for (QLoggingCategoryMacroHolder<QtInfoMsg> qt_category(m_category); qt_category; qt_category.control = false)
+                    QMessageLogger(m_file, m_line, m_function, qt_category.name()).info() << m_stream.toStdString();
+                break;
+            case LogLevel::Warning:
+                for (QLoggingCategoryMacroHolder<QtWarningMsg> qt_category(m_category); qt_category; qt_category.control = false)
+                    QMessageLogger(m_file, m_line, m_function, qt_category.name()).warning() << m_stream.toStdString();
+                break;
+            case LogLevel::Error:
+                for (QLoggingCategoryMacroHolder<QtCriticalMsg> qt_category(m_category); qt_category; qt_category.control = false)
+                    QMessageLogger(m_file, m_line, m_function, qt_category.name()).critical() << m_stream.toStdString();
+                break;
+            case LogLevel::Fatal:
+                for (QLoggingCategoryMacroHolder<QtFatalMsg> qt_category(m_category); qt_category; qt_category.control = false)
+                    QMessageLogger(m_file, m_line, m_function, qt_category.name()).fatal() << m_stream.toStdString();
+                break;
+        }
+    }
 }
 
 } // namespace QtWin

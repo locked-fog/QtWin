@@ -39,6 +39,32 @@ public:
     int darkTone() const;
     MaterialType material() const;
 
+    /**
+     * @brief 获取当前窗口的调色板实例
+     * @return QWPalette 引用，可用于后续控件的颜色计算
+     */
+    const QWPalette& colorPalette() const;
+
+    /**
+     * @brief 根据当前主题模式获取指定色彩角色和色调的颜色
+     * @param colorRole 色彩角色（主色、副色等）
+     * @param toneOverride 可选的色调覆盖值，如果为-1则使用当前主题的默认色调
+     * @return 计算后的 QColor
+     */
+    QColor getThemeColor(QWPalette::QWColor colorRole, int toneOverride = -1) const;
+
+    /**
+     * @brief 获取当前主题模式下的默认色调
+     * @return 当前色调值
+     */
+    int currentTone() const;
+
+    /**
+     * @brief 判断当前是否为深色模式
+     * @return true 如果是深色模式
+     */
+    bool isDarkMode() const;
+
 public slots:
     void setSeedColor(const QColor &color);
     void setMaterial(MaterialType type);
@@ -49,9 +75,9 @@ signals:
     void seedColorChanged(const QColor &color);
     void materialChanged(MaterialType type);
     void toneChanged();
+    void themeChanged(bool isDark);
 
 protected:
-    // paintEvent现在只负责绘制透明背景，不再处理Default模式的绘制
     void paintEvent(QPaintEvent *event) override;
     void showEvent(QShowEvent *event) override;
 
@@ -59,16 +85,10 @@ private slots:
     void onThemeChanged(bool isDark);
 
 private:
-    /**
-     * @brief 【新增】根据颜色生成QSS背景样式字符串。
-     * @param color 要应用的背景颜色。
-     * @return 返回一个格式为 "background-color: rgb(r, g, b);" 的QString。
-     */
-    QString generateColorStyleSheet(const QColor& color) const;
-
     void initialize();
     void updateCustomTheme();
     void updateFrame();
+    void setupPalettes();
 
     QVBoxLayout *m_rootLayout;
     QWidget *m_centralWidget;

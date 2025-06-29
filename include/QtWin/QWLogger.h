@@ -5,8 +5,12 @@
 #include <QString>
 #include <QLoggingCategory>
 
+
+#define QWLOGGER(loggerName) Q_DECLARE_LOGGING_CATEGORY(loggerName)
+#define QWLOGNAME(loggerName,logName) Q_LOGGING_CATEGORY(loggerName,logName)
+
 // 为整个日志系统定义一个总的日志类别
-Q_DECLARE_LOGGING_CATEGORY(logGeneral)
+QWLOGGER(logGeneral)
 
 namespace QtWin {
 
@@ -18,6 +22,35 @@ enum class LogLevel {
     Error = QtCriticalMsg,
     Fatal = QtFatalMsg
 };
+
+/**
+ * @class QWLoggerHandler
+ * @brief 辅助日志逻辑处理
+ * 
+ * 通过宏定义自动处理日志逻辑
+ */
+class QWLoggerHandler{
+public:
+    QWLoggerHandler(LogLevel level, const QLoggingCategory& (*category)(), 
+                const char* file, int line, const char* function);
+    ~QWLoggerHandler();
+
+    template<typename T>
+    QWLoggerHandler& operator<<(const T& msg){
+        QTextStream stream(&m_stream);
+        stream<<msg;
+        return *this;
+    }
+
+private:
+    const QLoggingCategory& m_category;
+    LogLevel m_level;
+    QString m_stream;
+    const char* m_file;
+    int m_line;
+    const char* m_function;
+};
+#define qwLogger(level,category) QtWin::QWLoggerHandler(level,category,__FILE__,__LINE__,__FUNCTION__)
 
 /**
  * @class QWLogger

@@ -1,8 +1,13 @@
 #ifndef QWAPPLICATION_H
 #define QWAPPLICATION_H
 
+#include "QtWin/QWLogger.h"
+#include "QtWin/QWSettings.h"
+
 #include <QApplication>
 #include <QString>
+
+QWLOGGER(qtwinDefaultLogger)
 
 namespace QtWin {
 class QWSettings;

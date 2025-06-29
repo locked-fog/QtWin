@@ -108,66 +108,73 @@ void QWLogger::init(const QString& logFilePath) {
 
 bool QWLogger::clearLogFile(const QString& logFilePath) {
     QString targetFilePath = logFilePath;
-    
-    // 如果没有指定路径，且日志系统已初始化，使用当前日志文件路径
-    if (targetFilePath.isEmpty() && logResources && logResources->file.fileName() != "") {
+    bool success = false;
+
+    // 确定目标文件路径
+    if (targetFilePath.isEmpty() && logResources && !logResources->file.fileName().isEmpty()) {
         targetFilePath = logResources->file.fileName();
     }
-    
-    // 如果仍然没有有效路径，返回失败
+
     if (targetFilePath.isEmpty()) {
         qWarning() << "No log file path specified and no active log file found.";
         return false;
     }
-    
-    // 检查是否是当前正在使用的日志文件
-    bool isCurrentLogFile = logResources && 
-                           logResources->file.fileName() == targetFilePath && 
+
+    // 检查是否为当前正在使用的日志文件
+    bool isCurrentLogFile = logResources &&
+                           logResources->file.fileName() == targetFilePath &&
                            logResources->file.isOpen();
-    
+
     if (isCurrentLogFile) {
-        // 如果是当前正在使用的文件，需要先关闭
-        const QMutexLocker locker(&logResources->mutex);
-        logResources->stream.setDevice(nullptr);
-        logResources->file.close();
-        
-        // 清空文件
-        QFile clearFile(targetFilePath);
-        if (!clearFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-            qWarning() << "Failed to clear current log file:" << targetFilePath;
-            // 尝试重新打开原文件
-            if (logResources->file.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text)) {
+        // 【关键修复】将锁的范围限定在文件操作的关键部分
+        {
+            const QMutexLocker locker(&logResources->mutex);
+            logResources->stream.setDevice(nullptr);
+            logResources->file.close();
+
+            // 清空文件
+            QFile clearFile(targetFilePath);
+            if (clearFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+                clearFile.close();
+                success = true;
+            } else {
+                // 如果清空失败，也记录下来（此时锁已释放，可以安全log）
+                success = false;
+            }
+
+            // 无论清空是否成功，都尝试重新打开文件以保证日志系统能继续工作
+            if (!logResources->file.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text)) {
+                // 如果重开失败，这是一个严重问题
+                logResources.reset(); // 释放资源，后续日志将回退到控制台
+                success = false;
+            } else {
+                // 恢复流
                 logResources->stream.setDevice(&logResources->file);
                 logResources->stream.setEncoding(QStringConverter::Utf8);
             }
-            return false;
+        } // -- 互斥锁在这里被释放 --
+
+        // 【关键修复】在锁之外记录日志，避免死锁
+        if (success) {
+            qCInfo(logGeneral) << "Log file cleared and reopened:" << targetFilePath;
+        } else {
+            qWarning() << "Failed to properly clear and reopen the current log file:" << targetFilePath;
         }
-        clearFile.close();
-        
-        // 重新打开用于追加
-        if (!logResources->file.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text)) {
-            qWarning() << "Failed to reopen log file after clearing:" << targetFilePath;
-            return false;
-        }
-        
-        logResources->stream.setDevice(&logResources->file);
-        logResources->stream.setEncoding(QStringConverter::Utf8);
-        
-        // 记录清理事件
-        qCInfo(logGeneral) << "Log file cleared and reopened:" << targetFilePath;
+
     } else {
-        // 如果不是当前正在使用的文件，直接清空
+        // 如果不是当前使用的日志文件，则无需加锁，直接操作
         QFile clearFile(targetFilePath);
-        if (!clearFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        if (clearFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+            clearFile.close();
+            success = true;
+            qCInfo(logGeneral) << "Log file cleared:" << targetFilePath;
+        } else {
             qWarning() << "Failed to clear log file:" << targetFilePath;
-            return false;
+            success = false;
         }
-        clearFile.close();
-        
-        qCInfo(logGeneral) << "Log file cleared:" << targetFilePath;
     }
-    
-    return true;
+
+    return success;
 }
 
 QWLoggerHandler::QWLoggerHandler(LogLevel level, const QLoggingCategory& (*category)(),

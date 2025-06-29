@@ -1,9 +1,9 @@
 #include "QtWin/QWApplication.h"
-#include "QtWin/QWLogger.h"
-#include "QtWin/QWSettings.h"
 
 #include <QStandardPaths>
 #include <QDir>
+
+QWLOGNAME(qtwinDefaultLogger,"qtwin.core.app")
 
 namespace QtWin {
 
@@ -26,6 +26,7 @@ QWApplication::QWApplication(int &argc, char **argv,
     QDir().mkpath(dataPath); // 确保目录存在。
     const QString logFilePath = dataPath + "/app.log";
     QWLogger::init(logFilePath);
+    qwLogger(LogLevel::Info,qtwinDefaultLogger)<<"App name :"<<instance()->applicationName()<<", App Version :"<<instance()->applicationVersion();
 
     // 3. 初始化设置系统
     // 将 this 作为父对象，确保 QSettings 的生命周期由 QApplication 管理

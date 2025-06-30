@@ -122,8 +122,8 @@ bool QWLogger::clearLogFile(const QString& logFilePath) {
 
     // 检查是否为当前正在使用的日志文件
     bool isCurrentLogFile = logResources &&
-                           logResources->file.fileName() == targetFilePath &&
-                           logResources->file.isOpen();
+                            logResources->file.fileName() == targetFilePath &&
+                            logResources->file.isOpen();
 
     if (isCurrentLogFile) {
         // 【关键修复】将锁的范围限定在文件操作的关键部分

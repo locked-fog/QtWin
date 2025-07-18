@@ -6,11 +6,15 @@ qt_add_library(QtWin SHARED
     qwlogger.cpp
     qwsettings.cpp
     qwwindow.cpp
+    qwtabbutton.cpp
+    qwnavigationview.cpp
     ../include/QtWin/QWPalette.h
     ../include/QtWin/QWApplication.h
     ../include/QtWin/QWLogger.h
     ../include/QtWin/QWSettings.h
     ../include/QtWin/QWWindow.h
+    ../include/QtWin/QWTabButton.h
+    ../include/QtWin/QWNavigationView.h
 )
 
 add_library(QtWin::QtWin ALIAS QtWin)

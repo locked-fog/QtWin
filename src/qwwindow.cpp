@@ -111,8 +111,6 @@ void QWWindow::setMaterial(QWWindow::MaterialType type) {
     if (m_material == type) return;
     m_material = type;
 
-    // 更新DWM框架，应用或移除材质
-    updateFrame();
     // 更新Qt部分的样式
     updateCustomTheme();
 
@@ -146,6 +144,7 @@ void QWWindow::updateFrame() {
     
     // 【关键】无论何种情况，都必须设置WA_TranslucentBackground，因为DwmExtendFrameIntoClientArea需要它
     setAttribute(Qt::WA_TranslucentBackground, material_is_active);
+    setAutoFillBackground(!material_is_active); // Default模式需要自动填充，材质模式则不需要
 
     if (material_is_active) {
         auto backdropType = static_cast<int>(m_material);
@@ -158,6 +157,7 @@ void QWWindow::updateFrame() {
         MARGINS margins = {0, 0, 0, 0};
         DwmExtendFrameIntoClientArea(hwnd, &margins);
     }
+    update();
 #endif
 }
 
@@ -221,6 +221,8 @@ void QWWindow::updateCustomTheme() {
         }
     }
     
+    updateFrame();
+    
     // 重新设置调色板以确保颜色更新
     setupPalettes();
     
@@ -251,7 +253,6 @@ void QWWindow::onThemeChanged(bool isDark) {
 void QWWindow::showEvent(QShowEvent *event) {
     QWidget::showEvent(event);
     if (m_firstShow && windowHandle()) {
-        updateFrame(); 
         onThemeChanged(m_isDarkMode);
         m_firstShow = false;
     }

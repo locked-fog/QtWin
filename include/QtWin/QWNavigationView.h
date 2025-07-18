@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QList>
+#include <QEvent>
 
 // 前向声明 Qt 内部类
 QT_BEGIN_NAMESPACE
@@ -113,6 +114,7 @@ protected:
     // 重写事件处理器以实现自定义行为
     void paintEvent(QPaintEvent *event) override;
     void showEvent(QShowEvent *event) override;
+    void changeEvent(QEvent *event) override;
 
 private slots:
     // 私有槽函数，用于内部逻辑处理

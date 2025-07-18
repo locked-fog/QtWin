@@ -218,9 +218,23 @@ void QWNavigationView::_updateTheme() {
 }
 
 void QWNavigationView::paintEvent(QPaintEvent *event) {
-    // 将背景绘制为透明，以显示父窗口 QWWindow 的材质效果
-    QPainter painter(this);
-    painter.fillRect(rect(), Qt::transparent);
+    // 【最终修复】让本控件的绘制行为与父窗口的材质同步
+    bool isMaterialMode = false;
+    auto *win = qobject_cast<QWWindow*>(window());
+    if (win) {
+        isMaterialMode = (win->material() != QWWindow::Default);
+    }
+
+    if (isMaterialMode) {
+        // 仅在父窗口处于材质模式时，才将自身背景绘制为透明以透出材质
+        QPainter painter(this);
+        painter.fillRect(rect(), Qt::transparent);
+    } else {
+        // 在 Default 模式下，不执行任何特殊绘制，完全依赖 Qt 的标准绘制流程。
+        // QWidget::paintEvent 会根据 QPalette 自动绘制背景。
+    }
+
+    // 无论何种模式，都需要调用基类的 paintEvent 来确保子控件等能被正确绘制。
     QWidget::paintEvent(event);
 }
 
@@ -230,6 +244,24 @@ void QWNavigationView::showEvent(QShowEvent *event) {
         _updateTheme();
     }
     QWidget::showEvent(event);
+}
+
+/**
+ * @brief 重写事件处理器，用于捕获调色板变化事件。
+ *
+ * 当控件的 QPalette 改变时，Qt 会发送一个 QEvent::PaletteChange 事件。
+ * 我们在这里捕获它，并调用 _updateTheme() 来刷新所有自定义绘制的颜色。
+ * @param event 发生的事件。
+ */
+void QWNavigationView::changeEvent(QEvent *event)
+{
+    // 首先调用基类的实现，这是良好实践
+    QWidget::changeEvent(event);
+
+    // 检查事件类型是否为调色板变化
+    if (event->type() == QEvent::PaletteChange) {
+        _updateTheme();
+    }
 }
 
 } // namespace QtWin

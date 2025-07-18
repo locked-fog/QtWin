@@ -18,6 +18,10 @@
 #endif
 #endif
 
+#ifndef DWMSBT_NONE
+#define DWMSBT_NONE 1
+#endif
+
 namespace QtWin {
 
 QWWindow::QWWindow(QWidget *parent)
